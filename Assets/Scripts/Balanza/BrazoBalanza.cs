@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class BrazoBalanza : MonoBehaviour
 {
-    float leftDishWeight, rightDishWeight, maxWeightDifference;
+    public delegate void WeightChangedDelegate(bool isWeightCorrect);
+    public WeightChangedDelegate OnWeightChanged;
+
+    public float rightDishWeight;
+
+    float leftDishWeight, maxWeightDifference;
 
     // Máximo ángulo de balanceo do brazo
     float maxAngle;
@@ -70,6 +75,12 @@ public class BrazoBalanza : MonoBehaviour
         {
             leftDishWeight += swp.GetWeigth();
         }
+
+        if (OnWeightChanged != null)
+        {
+            OnWeightChanged(rightDishWeight == leftDishWeight);
+        }
+
         Debug.Log($"{gameObject.name}.UpdateLeftDishWeight = {leftDishWeight})");
     }
 
