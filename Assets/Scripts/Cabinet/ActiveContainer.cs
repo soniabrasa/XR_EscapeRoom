@@ -7,10 +7,14 @@ public class ActiveContainer : MonoBehaviour
     // Script que controla si la puerta se puede abrir o está cerrada con llave
     public CabinetDoor cabinetDoor;
 
+    // Puerta bloqueada?
     bool doorLocked;
 
     // Lista de objectos ocultos tras la puerta del armario
     List<GameObject> objectsInCabinet;
+
+    // Lista de layer mask de objectos admitidos para des/activar
+    public LayerMask layerMask;
 
 
     void Start()
@@ -72,31 +76,35 @@ public class ActiveContainer : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // if (((1 << other.gameObject.layer) & layerMask.value) != 0)
-        Debug.Log($"{gameObject.name}.ActiveContainer.OnTriggerEnter({other.gameObject.name})");
-
-        // Agregamos other a la lista de GameObjects dentro del trigger
-        objectsInCabinet.Add(other.gameObject);
-
-        // Si la puerta está bloqueada, se desactiva other para evitar la interacción con él
-        // P.ej., atravesando los collider con las gafas (verlos) o las manos (cogerlos)
-
-        if (doorLocked)
+        if (((1 << other.gameObject.layer) & layerMask.value) != 0)
         {
-            // other.gameObject.SetActive(false);
-            ActivateOneObject(other.gameObject, false);
-        }
+            Debug.Log($"{gameObject.name}.ActiveContainer.OnTriggerEnter({other.gameObject.name})");
 
-        // Comprobar por consola que other pasa a Active false
-        Debug.Log($"\t SetActive({other.gameObject.activeSelf})");
+            // Agregamos other a la lista de GameObjects dentro del trigger
+            objectsInCabinet.Add(other.gameObject);
+
+            // Si la puerta está bloqueada, se desactiva other para evitar la interacción con él
+            // P.ej., atravesando los collider con las gafas (verlos) o las manos (cogerlos)
+
+            if (doorLocked)
+            {
+                // other.gameObject.SetActive(false);
+                ActivateOneObject(other.gameObject, false);
+            }
+
+            // Comprobar por consola que other pasa a Active false
+            Debug.Log($"\t SetActive({other.gameObject.activeSelf})");
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
-        // if (((1 << other.gameObject.layer) & layerMask.value) != 0)
-        Debug.Log($"{gameObject.name}.ActiveContainer.OnTriggerExit({other.gameObject.name})");
+        if (((1 << other.gameObject.layer) & layerMask.value) != 0)
+        {
+            Debug.Log($"{gameObject.name}.ActiveContainer.OnTriggerExit({other.gameObject.name})");
 
-        // Eliminamos other de la lista de GameObjects dentro del trigger
-        objectsInCabinet.Remove(other.gameObject);
+            // Eliminamos other de la lista de GameObjects dentro del trigger
+            objectsInCabinet.Remove(other.gameObject);
+        }
     }
 }
